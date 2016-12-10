@@ -13,6 +13,7 @@ for i in range(1000000):
     result = hidden_layer.apply(input_vector[:, None])
     result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(result)
     result = output_layer.apply(result)
+    result = ActivationFunctions.ActivationFunctions.apply_softmax(result)
 
     loss = LossFunctions.LossFunctions.calculate_cross_entropy_loss(result, np.array([label]))
     if i % 10000 == 0:

@@ -7,6 +7,8 @@ class MaxPoolingLayer:
     __input_height = 0
     __input_depth = 0
 
+    __previous_max_indices = None
+
     def __init__(self, filter_size: int, stride_length: int, input_width: int, input_height: int, input_depth: int):
         self.__filter_size = filter_size
         self.__stride_length = stride_length
@@ -20,6 +22,8 @@ class MaxPoolingLayer:
         selection_matrix = np.argmax(columnated, 1)
         offsetter = np.arange(columnated.shape[0]) * columnated.shape[1]
         selection_matrix = selection_matrix + offsetter
+
+        self.__previous_max_indices = selection_matrix
 
         return self.__col2im(np.take(columnated, selection_matrix))
 
@@ -59,3 +63,8 @@ class MaxPoolingLayer:
         selection_matrix = single_depth + single_column + single_row
 
         return np.take(input_matrix, selection_matrix)
+
+    def backprop(self, backprop_matrix: np.array) -> np.array:
+        result = np.zeros(self.__input_width, self.__input_height, self.__input_depth)
+
+        print(result)
