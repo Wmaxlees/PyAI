@@ -27,56 +27,25 @@ class ConvolutionalLayer:
 
     def apply(self, input_matrix: np.array) -> np.array:
         columnated = self.__im2col(input_matrix)
-        print(columnated)
 
         raw_results = np.multiply(self.__filters, columnated)
 
         return raw_results
 
     def __im2col(self, input_matrix: np.array) -> np.array:
-        # Parameters
-        height, width, depth = input_matrix.shape
-        column_extent = width - self.__F + 1
-        row_extent = height - self.__F + 1
+        input_width, input_height, depth = input_matrix.shape
 
-        # Get Starting block indices
-        start_idx = np.arange(self.__F)[:, None] * width + np.arange(self.__F)
+        frames_per_width = int((input_width - self.__F + 1) / self.__S)
+        frames_per_height = int((input_height - self.__F + 1) / self.__S)
 
-        # Get offsetted indices across the height and width of input array
-        offset_idx = np.arange(row_extent)[:, None] * width + np.arange(column_extent)
+        consecutive_numbers = np.arange(self.__F * depth)
+        row = np.append(consecutive_numbers, consecutive_numbers + input_width * depth)
 
-        # Get all actual indices & index into input array for final output
-        out = np.take(input_matrix, start_idx.ravel()[:, None] + offset_idx.ravel())
+        consecutive_numbers = np.arange(frames_per_width) * depth
+        column = consecutive_numbers
+        for i in range(frames_per_height - 1):
+            column = np.append(column, consecutive_numbers + (i + 1) * depth * input_width)[:, None]
 
-        return out
+        selection_array = row + column
 
-        # number_of_filters = (self.__input_width/self.__F)/self.__S
-        # number_of_filters += (self.__input_height/self.__F)/self.__S
-        #
-        # number_of_filters /= self.__S
-        #
-        # size_of_filter = self.__F * self.__F * self.__depth
-        #
-        # result = np.zeros(size_of_filter, number_of_filters)
-        #
-        # row = 0
-        # column = 0
-        #
-        # target_row = 0
-        # target_column = 0
-        #
-        # while row+self.__F < self.__input_height and column+self.__F < self.__input_width:
-        #     for row_offset in range(row, row + self.__F):
-        #         for column_offset in range(column, column + self.__F):
-        #             for stack in range(self.__depth):
-        #                 result[target_row][target_column] = input_matrix[row_offset][column_offset][stack]
-        #                 target_row += 1
-        #
-        #     target_column += 1
-        #
-        #     row += self.__S
-        #     if row + self.__F >= self.__input_height:
-        #         row = 0
-        #         column += self.__S
-        #
-        # return result
+        return np.take(input_matrix, selection_array)
