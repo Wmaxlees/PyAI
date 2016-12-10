@@ -1,5 +1,6 @@
 import numpy as np
 import ConvolutionalLayer
+import MaxPoolingLayer
 
 # input_array = np.array(
 #     [
@@ -15,35 +16,46 @@ import ConvolutionalLayer
 #     ]
 # )
 
-# input_array = np.random.rand(3, 3, 3)
+# input_array = np.random.rand(5, 10, 3)
 #
-# filter_width = 2
-# filter_height = 2
+# filter_width = 3
+# filter_height = 3
 # step_size = 1
 #
 # input_width, input_height, depth = input_array.shape
 #
-# frames_per_width = int((input_width - filter_width + 1) / step_size) # 4
-# frames_per_height = int((input_height - filter_height + 1) / step_size) # 9
+# frames_per_width = int((input_width - filter_width + 1) / step_size)
+# frames_per_height = int((input_height - filter_height + 1) / step_size)
 #
 # number_of_windows = frames_per_width * frames_per_height
 #
 # consecutive_numbers = np.arange(filter_width * depth)
-# row = np.append(consecutive_numbers, consecutive_numbers+input_width*depth)
+# row = consecutive_numbers
+# for i in range(frames_per_width - 1):
+#     row = np.append(row, consecutive_numbers+input_width*(i+1)*depth)
+#
+# print(row)
 #
 # consecutive_numbers = np.arange(frames_per_width) * depth
-#
 # column = consecutive_numbers
 # for i in range(frames_per_height - 1):
 #     column = np.append(column, consecutive_numbers+(i+1)*depth*input_width)[:, None]
 #
 # selection_array = row+column
+#
+# print(selection_array)
 
 # print(np.take(input_array, selection_array))
 
-myCNN = ConvolutionalLayer.ConvolutionalLayer(100, 8, 1, 0, 100, 100)
+myCNN = ConvolutionalLayer.ConvolutionalLayer(10, 8, 4, 0, 1024, 768)
+myMaxPoolingLayer = MaxPoolingLayer.MaxPoolingLayer(2, 2, 191, 255, 10)
+myCNN2 = ConvolutionalLayer.ConvolutionalLayer(8, 5, 1, 0, 95, 127, 10)
+myMaxPoolingLayer2 = MaxPoolingLayer.MaxPoolingLayer(2, 2, 123, 91, 8)
 
-result = myCNN.apply(np.random.rand(100, 100, 3))
+result = myCNN.apply(np.random.rand(1024, 768, 3))
+result = myMaxPoolingLayer.apply(result)
+result = myCNN2.apply(result)
+result = myMaxPoolingLayer2.apply(result)
 
 print(result.shape)
 

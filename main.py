@@ -12,7 +12,7 @@ observation_n = env.reset()
 # 1024 x 768 x 3
 # myLSTM = LSTM.LSTM(2359296, 2, ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid)
 
-myCNN = ConvolutionalLayer.ConvolutionalLayer(100, 8, 1, 0, 768, 1024)
+myCNN = ConvolutionalLayer.ConvolutionalLayer(25, 8, 1, 0, 1024, 768)
 
 previous_view = None
 
