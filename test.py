@@ -4,6 +4,7 @@ import MaxPoolingLayer
 import ActivationFunctions
 import FullyConnectedLayer
 import LossFunctions
+import MatrixToVector
 
 myCNN = ConvolutionalLayer.ConvolutionalLayer(10, 8, 4, 0, 1024, 768)
 myMaxPoolingLayer = MaxPoolingLayer.MaxPoolingLayer(2, 2, 191, 255, 10)
@@ -11,6 +12,7 @@ myCNN2 = ConvolutionalLayer.ConvolutionalLayer(8, 5, 1, 0, 95, 127, 10)
 myMaxPoolingLayer2 = MaxPoolingLayer.MaxPoolingLayer(2, 2, 123, 91, 8)
 myCNN3 = ConvolutionalLayer.ConvolutionalLayer(6, 3, 1, 0, 61, 45, 8)
 myMaxPoolingLayer3 = MaxPoolingLayer.MaxPoolingLayer(2, 2, 43, 59, 6)
+myMatrixToVector = MatrixToVector.MatrixToVector()
 myHiddenLayer = FullyConnectedLayer.FullyConnectedLayer(3654, 1000)
 myOutputLayer = FullyConnectedLayer.FullyConnectedLayer(1000, 5)
 
@@ -27,7 +29,7 @@ for i in range(10000):
     result = myCNN3.apply(result)
     result = myMaxPoolingLayer3.apply(result)
     result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(result)
-    result = result.flatten()[:, None]
+    result = myMatrixToVector.apply(result)[:, None]
     result = myHiddenLayer.apply(result)
     result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(result)
     result = myOutputLayer.apply(result)
@@ -42,6 +44,9 @@ for i in range(10000):
 
     result = myOutputLayer.backprop(backprop, 0.001)
     result = myHiddenLayer.backprop(result, 0.001)
+    result = myMatrixToVector.undo(result)
+    result = myMaxPoolingLayer3.backprop(result)
+
 
 
 
