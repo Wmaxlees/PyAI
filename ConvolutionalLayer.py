@@ -22,13 +22,17 @@ class ConvolutionalLayer:
         self.__input_width = input_width
         self.__depth = depth
 
-        width = ((input_height - f) / s) * ((input_width - f) / s) * 3
-        self.__filters = np.random.rand(k, width)
+        frames_per_width = int((input_width - self.__F + 1) / self.__S)
+        frames_per_height = int((input_height - self.__F + 1) / self.__S)
+        self.__filters = np.random.rand(frames_per_height * frames_per_width, k)
 
     def apply(self, input_matrix: np.array) -> np.array:
         columnated = self.__im2col(input_matrix)
 
-        raw_results = np.multiply(self.__filters, columnated)
+        print(columnated.shape)
+        print(self.__filters.shape)
+
+        raw_results = np.dot(columnated, self.__filters)
 
         return raw_results
 
@@ -39,13 +43,21 @@ class ConvolutionalLayer:
         frames_per_height = int((input_height - self.__F + 1) / self.__S)
 
         consecutive_numbers = np.arange(self.__F * depth)
-        row = np.append(consecutive_numbers, consecutive_numbers + input_width * depth)
+        column = np.append(consecutive_numbers, consecutive_numbers + input_width * depth)
+        column = column[:, None]
 
         consecutive_numbers = np.arange(frames_per_width) * depth
-        column = consecutive_numbers
+        row = consecutive_numbers
         for i in range(frames_per_height - 1):
-            column = np.append(column, consecutive_numbers + (i + 1) * depth * input_width)[:, None]
+            row = np.append(row, consecutive_numbers + (i + 1) * depth * input_width)
 
         selection_array = row + column
 
         return np.take(input_matrix, selection_array)
+
+    def __col2im(self, input_matrix: np.array, original_width: int, original_height: int) -> np.array:
+        result_width = (original_width - self.__F + (2*self.__P)) / self.__S + 1
+        result_height = (original_height - self.__F + (2*self.__P)) / self.__S + 1
+        result_depth = self.__K
+
+        
