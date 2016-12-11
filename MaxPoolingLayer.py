@@ -66,7 +66,7 @@ class MaxPoolingLayer:
 
     def backprop(self, backprop_matrix: np.array) -> np.array:
         original_shape = np.array([self.__input_width, self.__input_height, self.__input_depth])
-        
+
         result = np.zeros([self.__input_width*self.__input_height*self.__input_depth])
         result[self.__previous_max_indices] = backprop_matrix.flatten()
         result = np.reshape(result, original_shape)

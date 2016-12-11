@@ -67,3 +67,17 @@ class ConvolutionalLayer:
 
         return np.take(input_matrix, selection_matrix)
 
+    def backprop(self, backprop_matrix: np.array) -> np.array:
+        columnation = self.__im2col_back(backprop_matrix)
+        print(columnation)
+
+    def __im2col_back(self, backprop_matrix: np.array) -> np.array:
+        input_width, input_height, depth = backprop_matrix.shape
+
+        single_row = np.arange(input_height * input_width)
+        single_column = np.arange(depth)[:, None]
+
+        selection_matrix = single_row + single_column
+
+        return np.take(backprop_matrix, selection_matrix)
+

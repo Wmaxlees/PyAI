@@ -5,6 +5,7 @@ import ActivationFunctions
 import FullyConnectedLayer
 import LossFunctions
 import MatrixToVector
+import SigmoidActivationFunction
 
 myCNN = ConvolutionalLayer.ConvolutionalLayer(10, 8, 4, 0, 1024, 768)
 myMaxPoolingLayer = MaxPoolingLayer.MaxPoolingLayer(2, 2, 191, 255, 10)
@@ -22,16 +23,16 @@ for i in range(10000):
     result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(np.random.rand(1024, 768, 3))
     result = myCNN.apply(result)
     result = myMaxPoolingLayer.apply(result)
-    result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(result)
+    result = SigmoidActivationFunction.SigmoidActivationFunction.apply(result)
     result = myCNN2.apply(result)
     result = myMaxPoolingLayer2.apply(result)
-    result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(result)
+    result = SigmoidActivationFunction.SigmoidActivationFunction.apply(result)
     result = myCNN3.apply(result)
     result = myMaxPoolingLayer3.apply(result)
-    result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(result)
+    result = SigmoidActivationFunction.SigmoidActivationFunction.apply(result)
     result = myMatrixToVector.apply(result)[:, None]
     result = myHiddenLayer.apply(result)
-    result = ActivationFunctions.ActivationFunctions.apply_logistic_sigmoid(result)
+    result = SigmoidActivationFunction.SigmoidActivationFunction.apply(result)
     result = myOutputLayer.apply(result)
     result = ActivationFunctions.ActivationFunctions.apply_softmax(result)
 
@@ -43,9 +44,12 @@ for i in range(10000):
     backprop = np.multiply(loss, label)[:, None]
 
     result = myOutputLayer.backprop(backprop, 0.001)
+    result = SigmoidActivationFunction.SigmoidActivationFunction.backprop(result)
     result = myHiddenLayer.backprop(result, 0.001)
     result = myMatrixToVector.undo(result)
+    result = SigmoidActivationFunction.SigmoidActivationFunction.backprop(result)
     result = myMaxPoolingLayer3.backprop(result)
+    result = myCNN3.backprop(result)
 
 
 
